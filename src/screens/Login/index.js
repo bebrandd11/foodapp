@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Image,
   Keyboard,
@@ -13,10 +13,11 @@ import {
   GoogleSigninButton,
   statusCodes,
 } from '@react-native-community/google-signin';
+import { LoginManager, AccessToken } from 'react-native-fbsdk';
 import auth from '@react-native-firebase/auth';
-import {useNavigation} from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 
-import {styles} from './styles';
+import { styles } from './styles';
 
 //Icon Path
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -48,8 +49,34 @@ const Login = () => {
 
       // Sign-in the user with the credential
       return await auth().signInWithCredential(googleCredential);
-    } catch(error) {
-      console.log({error});
+    } catch (error) {
+      console.log({ error });
+    }
+  }
+
+  const fbLogin = async () => {
+    try {
+      // Attempt login with permissions
+      const result = await LoginManager.logInWithPermissions(['public_profile', 'email']);
+
+      if (result.isCancelled) {
+        throw 'User cancelled the login process';
+      }
+
+      // Once signed in, get the users AccesToken
+      const data = await AccessToken.getCurrentAccessToken();
+
+      if (!data) {
+        throw 'Something went wrong obtaining access token';
+      }
+
+      // Create a Firebase credential with the AccessToken
+      const facebookCredential = auth.FacebookAuthProvider.credential(data.accessToken);
+
+      // Sign-in the user with the credential
+      return await auth().signInWithCredential(facebookCredential);
+    } catch (error) {
+      console.log({ error });
     }
   }
 
@@ -87,31 +114,31 @@ const Login = () => {
     passError: '',
   });
 
-  const textInputChange = () => {};
+  const textInputChange = () => { };
 
   const validEmail = (text) => {
     const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
     if (reg.test(text) === false) {
-      setData({emailError: 'please enter the valid email'});
+      setData({ emailError: 'please enter the valid email' });
       return false;
     } else {
-      setData({emailError: ''});
+      setData({ emailError: '' });
     }
   };
 
   const emailValidator = () => {
     if (data.email == '') {
-      setData({emailError: 'please enter the email'});
+      setData({ emailError: 'please enter the email' });
     } else {
-      setData({emailError: ''});
+      setData({ emailError: '' });
     }
   };
 
   const passwordValidator = () => {
     if (data.password == '') {
-      setData({passError: 'please enter the Password'});
+      setData({ passError: 'please enter the Password' });
     } else {
-      setData({passError: ''});
+      setData({ passError: '' });
     }
   };
 
@@ -129,14 +156,21 @@ const Login = () => {
   };
 
   const onSubmit = () => {
-    if (data.email == '' && data.password == '') {
-      alert('please enter the email & password');
-    } else if (data.email == '') {
+  // if(isValide){
+  //   navigation.navigate('Home')
+  // }
+  isValide()
+  };
+  const isValide = () => {
+    if (data.email == "" ) {
       alert('please enter the email');
-    } else if (data.password == '') {
+      return false
+    } else if (data.password == "") {
       alert('please enter the password');
+      return false
     } else {
-      navigation.navigate('Home');
+    navigation.navigate('Home')
+      
     }
   };
 
@@ -172,14 +206,14 @@ const Login = () => {
           selectTextOnFocus={true}
           style={[
             styles.textInput,
-            {backgroundColor: data.hasFocus ? '#e85a71' : '#ddd'},
+            { backgroundColor: data.hasFocus ? '#e85a71' : '#ddd' },
           ]}
-          onFocus={() => setData({hasFocus: true})}
+          onFocus={() => setData({ hasFocus: true })}
           onBlur={() => emailValidator()}
-          onChangeText={(val) => setData({email: val})}
+          onChangeText={(val) => setData({ email: val })}
           onChangeText={(text) => validEmail(text)}
         />
-        <Text style={{color: '#e85a71'}}>{data.emailError}</Text>
+        <Text style={{ color: '#e85a71' }}>{data.emailError}</Text>
         <View
           style={[
             styles.passInput,
@@ -193,7 +227,7 @@ const Login = () => {
             placeholder="Password"
             keyboardType="default"
             secureTextEntry={data.secureTextEntry ? true : false}
-            onFocus={() => setData({passFocus: true})}
+            onFocus={() => setData({ passFocus: true })}
             onBlur={() => passwordValidator()}
             onChangeText={(val) => handlePasswordChange(val)}
           />
@@ -201,18 +235,18 @@ const Login = () => {
             {data.secureTextEntry ? (
               <MaterialCommunityIcons name="eye-off" size={25} />
             ) : (
-              <MaterialCommunityIcons name="eye" size={25} />
-            )}
+                <MaterialCommunityIcons name="eye" size={25} />
+              )}
           </TouchableOpacity>
         </View>
-        <Text style={{color: '#e85a71'}}>{data.passError}</Text>
+        <Text style={{ color: '#e85a71' }}>{data.passError}</Text>
       </View>
     );
   };
 
   const renderForgetPassword = () => {
     return (
-      <TouchableOpacity onPress={() => {}}>
+      <TouchableOpacity onPress={() => { }}>
         <Text style={styles.forgetText}>Forget Password ?</Text>
       </TouchableOpacity>
     );
@@ -221,7 +255,7 @@ const Login = () => {
   const renderLoginButton = () => {
     return (
       <TouchableOpacity style={styles.loginBtn} onPress={() => onSubmit()}>
-        <Text style={{color: '#fff', fontWeight: 'bold'}}>Log in</Text>
+        <Text style={{ color: '#fff', fontWeight: 'bold' }}>Log in</Text>
       </TouchableOpacity>
     );
   };
@@ -235,9 +269,9 @@ const Login = () => {
           color={GoogleSigninButton.Color.Dark}
           onPress={signIn}
         /> */}
-        <TouchableOpacity style={[styles.socialBtn, {marginTop: 80}]} onPress={() => googleLogin()}>
+        <TouchableOpacity style={[styles.socialBtn, { marginTop: 80 }]} onPress={() => googleLogin()}>
           <View />
-          <Text style={{color: '#0080ff', fontWeight: 'bold'}}>
+          <Text style={{ color: '#0080ff', fontWeight: 'bold' }}>
             Log in with Google
           </Text>
           <Image
@@ -245,9 +279,9 @@ const Login = () => {
             style={styles.imgIcon}
           />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.socialBtn}>
+        <TouchableOpacity style={styles.socialBtn} onPress={() => fbLogin()}>
           <View />
-          <Text style={{color: '#0080ff', fontWeight: 'bold'}}>
+          <Text style={{ color: '#0080ff', fontWeight: 'bold' }}>
             Log in with Facebook
           </Text>
           <Image
@@ -262,9 +296,9 @@ const Login = () => {
   const renderJoin = () => {
     return (
       <View style={styles.joinView}>
-        <Text style={{color: '#aaa', fontWeight: 'bold'}}>Not a member?</Text>
+        <Text style={{ color: '#aaa', fontWeight: 'bold' }}>Not a member?</Text>
         <TouchableOpacity>
-          <Text style={{color: '#0080ff', fontWeight: 'bold'}}>Join now</Text>
+          <Text style={{ color: '#0080ff', fontWeight: 'bold' }}>Join now</Text>
         </TouchableOpacity>
       </View>
     );
