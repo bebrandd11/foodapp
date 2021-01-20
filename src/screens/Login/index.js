@@ -99,8 +99,8 @@ const Login = () => {
       }
     }
   };
-  // const [email, setEmail] = useState()
-  // const [password, setPassword] = useState()
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
 
   const [data, setData] = useState({
     email: '',
@@ -119,26 +119,26 @@ const Login = () => {
   const validEmail = (text) => {
     const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
     if (reg.test(text) === false) {
-      setData({ emailError: 'please enter the valid email' });
+      setData({ ...data, emailError: 'please enter the valid email' });
       return false;
     } else {
-      setData({ emailError: '' });
+      setData({ ...data, emailError: '' });
     }
   };
 
   const emailValidator = () => {
     if (data.email == '') {
-      setData({ emailError: 'please enter the email' });
+      setData({ ...data, emailError: 'please enter the email' });
     } else {
-      setData({ emailError: '' });
+      setData({ ...data, emailError: '' });
     }
   };
 
   const passwordValidator = () => {
     if (data.password == '') {
-      setData({ passError: 'please enter the Password' });
+      setData({ ...data, passError: 'please enter the Password' });
     } else {
-      setData({ passError: '' });
+      setData({ ...data, passError: '' });
     }
   };
 
@@ -156,21 +156,25 @@ const Login = () => {
   };
 
   const onSubmit = () => {
-  // if(isValide){
-  //   navigation.navigate('Home')
-  // }
-  isValide()
+    // if(isValide){
+    //   navigation.navigate('Home')
+    // }
+    isValide()
   };
+
   const isValide = () => {
-    if (data.email == "" ) {
+    // const {email,password} = data
+    const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    if (email == "") {
       alert('please enter the email');
-      return false
-    } else if (data.password == "") {
+    } else if (reg.test(email) == false) {
+      alert('please enter the valid email')
+    } else if (password == "") {
       alert('please enter the password');
-      return false
+    } else if (password.length < 8) {
+      alert('please enter minimum 8 charecter')
     } else {
-    navigation.navigate('Home')
-      
+      navigation.navigate('Home')
     }
   };
 
@@ -208,10 +212,11 @@ const Login = () => {
             styles.textInput,
             { backgroundColor: data.hasFocus ? '#e85a71' : '#ddd' },
           ]}
+          value={email}
           onFocus={() => setData({ hasFocus: true })}
-          onBlur={() => emailValidator()}
-          onChangeText={(val) => setData({ email: val })}
-          onChangeText={(text) => validEmail(text)}
+          // onBlur={() => emailValidator()}
+          onChangeText={(val) => setEmail(val)}
+        // onChangeText={(text) => validEmail(text)}
         />
         <Text style={{ color: '#e85a71' }}>{data.emailError}</Text>
         <View
@@ -227,9 +232,10 @@ const Login = () => {
             placeholder="Password"
             keyboardType="default"
             secureTextEntry={data.secureTextEntry ? true : false}
+            value={password}
             onFocus={() => setData({ passFocus: true })}
-            onBlur={() => passwordValidator()}
-            onChangeText={(val) => handlePasswordChange(val)}
+            // onBlur={() => passwordValidator()}
+            onChangeText={(val) => setPassword(val)}
           />
           <TouchableOpacity onPress={updateSecureTextEntry}>
             {data.secureTextEntry ? (
@@ -308,3 +314,41 @@ const Login = () => {
 };
 
 export default Login;
+
+// const isValide = () => {
+//   const {emailError} = email
+//   const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+//   if (email == "") {
+//     console.log(emailError);
+//     alert( 'please enter the email');
+//     setEmail({...email, emailError: 'please enter the email' });
+//   } else if (reg.test(email) == false) {
+//     alert({emailError: 'please enter the valid email'})
+//     setEmail({...email, emailError: 'please enter the valid email' });
+//   } else if (password == "") {
+//     alert({emailError: 'please enter the password'});
+//   } else if (password.length < 8) {
+//     alert({emailError: 'please enter minimum 8 charecter'})
+//   } else {
+//     navigation.navigate('Home')
+//   }
+// };
+// const setEmailValidator = () => {
+//   const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+//   if (email == "") {
+//     setEmail({...email, emailError: 'please enter the email' });
+//   } else if (reg.test(email) == false) {
+//     setEmail({...email, emailError: 'please enter the valid email' });
+//   } else {
+//     setEmail({...email, emailError: '' });
+//   }
+// }
+// const setPasswordValidator = () => {
+//   if (password == "") {
+//     setPassword({...password, passError: 'please enter the password' });
+//   } else if (password.length < 8) {
+//     setPassword({...password, passError: 'please enter minimum 8 charecter' });
+//   } else {
+//     setPassword({...password, passError: '' });
+//   }
+// }
